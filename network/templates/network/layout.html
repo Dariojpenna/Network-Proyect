@@ -1,0 +1,101 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>{% block title %}Social Network{% endblock %}</title>
+        <link rel="shortcut icon" href="{% static 'network/images/Logo-EchoNet-_1_.ico' %}" type="image/x-icon">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+        {% block script %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <div>
+            <div class="logo d-flex mb-4">
+                <div class=" col-1 m-3 text-right">
+                    <a class="col-12" href="{% url 'index' %}">
+                        <img src="{% static 'network/images/LogoRedondo.png' %}" width="50rem" />
+                    </a>
+                </div>
+                <div class="col-9 d-flex  m-3">
+                    <h1 class="">EchoNet</h1>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="col-2 ">
+                    <a class="nav-link mt-3" href="{% url 'logout' %}">Log Out</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="body d-flex">
+                <div class="col-4">
+                    <nav class="col-12 ">
+                        <ul class="  ">
+                            {% if user.is_authenticated %}
+                            <div > 
+                                    {% if user.profile_image %}                               
+                                    <img src="{{user.profile_image.url }}" alt="" width="200" height="200">
+                                    {% endif %}
+                            </div>
+                            <li class="nav-item">
+                                <a class="nav-link" href=" {% url 'profile' userConected=user.username %}"><strong>
+                                    <h2>{{user.username }}</h2></strong></a>
+                            </li>
+                            {% endif %}
+                            <li class="nav-item ">
+                                <a class="nav-link " href="{% url 'index' %}">All Posts</a>
+                            </li>
+                            {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'following' %}">Following</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'newPost' %}">New Post</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'register' %}">Register</a>
+                            </li>    
+                            {% endif %}
+                        </ul>
+                        <div class="mt-5 overflow-auto" style=" max-height: 200px;">
+                            {% if user.is_authenticated %}
+                            {% for users in all_users %}
+                                <ul class="">
+                                    <li class="nav-link d-flex">
+                                        <a href="{% url 'profile' userConected=users.username %}">
+                                            {% if users.profile_image %}
+                                            <img src="{{users.profile_image.url}}" alt="" width="40" height="40">
+                                            {% endif %}
+                                            {{users.username}}
+                                        </a>
+                                        
+                                    </li>
+                                </ul>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </nav>
+                </div>
+                <div class="block col-8  ">
+                    {% block body %}
+                    {% endblock %}
+                </div>
+            </div>
+
+
+        </div>
+
+    </body>
+
+</html>

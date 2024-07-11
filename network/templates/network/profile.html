@@ -1,0 +1,105 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+
+
+    <div class="">
+        <div class="row mx-3">
+            <div class=" col-4">
+                <div class=" col-12  m-2">
+                    {% if userProfile != request.user %}
+                    <img src="{{userProfile.profile_image.url }}" alt="" width="100" height="100">
+                    {% endif %}
+                    <h2>{{userProfile.username}}</h2>
+                </div>
+                <div class=" col-12">
+                    Followers: {{followers.count}}
+                </div>
+                <div class=" col-12 ">
+                    Following: {{following.count}}
+                </div>
+                <div class="mt-5">  
+                    {% if user.is_authenticated %}
+                        {% if userProfile != user %}
+                            {% if isFollower.count != 0 %}
+                                <form class=" col-12" action="{% url 'unfollow' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="userFollow" value="{{userProfile.username}}">
+                                    <input type="submit" value="unFollow">
+                                </form>
+                            {% else%}
+                                <form class=" col-12 " action="{% url 'follow' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="userFollow" value="{{userProfile.username}}">
+                                    <input type="submit" value="follow">
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for post in postInPage %}
+        <ul>
+            <li>
+                <div id="postContent_{{post.id}}" class="post m-2">
+                    {{post.post}}
+                </div>
+                <div class="m-2">
+                    {{post.date}}
+                </div>
+                <div class="m-2">
+                    <p id="totalLikes_{{post.id}}">Likes : {{post.like}}</p>
+                </div>
+                <div class="m-2">
+                    {% if user.is_authenticated %}
+                        {% if post.user != currentUser%}
+                            {% if post.id in whoYouLiked%}
+                                <button class="fa-regular fa-thumbs-down" id="like_{{post.id}}" onclick="likeUnlike('{{post.id}}', '{{whoYouLiked}}')" data-post-id="1" data-liked="false"></button>
+                            {% else %}
+                                <button class="fa-regular fa-thumbs-up" data-post-id="1" id="like_{{post.id}}" onclick="likeUnlike('{{post.id}}', '{{whoYouLiked}}')" data-liked="false"></button>
+                            {% endif %}
+                        {% else %}
+                            <div class="m-2 text-right" >  
+                                <button id="edit-button"  class="btn btn-primary " data-post="{{post.id}}">Edit Post</button>
+                                <!-- Modal window, default not visible -->
+                                <div id="ModalWindos" class="modal" >
+                                    <div class="modal-content">
+                                        <span class="close">&times; </span>
+                                        <h2>Edit Post</h2>
+                                        <form  id="formulario" class="form-floating"  method="post" >
+                                            {% csrf_token %}
+                                            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea"  ></textarea>
+                                            <input type="submit" class="edit-btn" id="edit-btn"  value="Edit Post">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                    {% endif %}
+                </div >
+                <hr>
+            </li>    
+        </ul>
+    {% endfor %}
+
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            {% if postInPage.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{postInPage.previous_page_number}}">Previous</a></li>
+            {% endif %}
+
+            {% if postInPage.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{postInPage.next_page_number}}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script src="{% static 'network/js/javaScript.js' %}"></script>     
+{% endblock %}

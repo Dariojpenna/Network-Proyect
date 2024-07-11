@@ -1,0 +1,16 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div class="m-2">
+        <h1>Create Your Post</h1>
+    </div>
+    
+    <form action="{% url 'addPost' %}" method="post">
+        {% csrf_token %}
+        <div style="margin: 10px;">
+            <textarea name="postContent" id="" cols="30" rows="10" placeholder="Write something here" class="rounded w-75"></textarea>
+        </div>
+        <br>
+        <button class="btn btn-primary m-2"> Send</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    {% for post in postInPage %}
+        <ul>
+            <li>
+                <div class="m-2 d-flex" >
+                    <div >
+                        {% if post.user.profile_image%}
+                            <img src="{{post.user.profile_image.url }}" alt="" width="80" height="80">
+                        {% endif %}
+                    </div>
+                    <div class="m-2">
+                        <a href=" {% url 'profile' userConected=post.user.username %} "><b>{{post.user.username}}</b></a>
+                    </div>
+                </div>
+
+                <div id="postContent_{{post.id}}"  class="post m-2 ">
+                    {{post.post}}
+                </div>
+            
+                <div class="m-2">
+                    {{post.date}}
+                </div>
+
+                <div class="mx-2">
+                    <p id="totalLikes_{{post.id}}">Likes : {{post.like}}</p>
+                </div>
+
+                <div class="mx-2 ">
+                    {% if user.is_authenticated %}
+                        {% if post.user != currentUser%}
+                            {% if post.id in whoYouLiked%}
+                                <div class="text-top ">
+                                    <button class="fa-regular fa-thumbs-down mt-0" id="like_{{post.id}}" onclick="likeUnlike('{{post.id}}', '{{whoYouLiked}}')" data-post-id="1" data-liked="false"></button>
+                                </div>
+                            {% else %}
+                                <div>
+                                    <button class="fa-regular fa-thumbs-up mt-0" data-post-id="1" id="like_{{post.id}}" onclick="likeUnlike('{{post.id}}', '{{whoYouLiked}}')" data-liked="false"></button> 
+                                </div>
+                            {% endif %}
+                            
+                        {% else %}
+                            <div class="m-2 text-right" >
+                                
+                                <button id="edit-button"  class="btn btn-primary mt-0   " data-post="{{post.id}}">Edit Post</button>
+                                <!-- Modal window, default not visible -->
+                                <div id="ModalWindos" class="modal" >
+                                    <div class="modal-content">
+                                        <span class="close">&times; </span>
+                                        <h2>Edit Post</h2>
+                                        <form  id="formulario" class="form-floating"  method="post" >
+                                            {% csrf_token %}
+                                            <textarea class="form-control " placeholder="Leave a comment here" id="floatingTextarea"  ></textarea>
+                                            <input type="submit" class="edit-btn" id="edit-btn"  value="Edit Post">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div >
+                <hr>
+            </li>    
+        </ul>
+    
+    {% endfor %}
+    
+    
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            {% if postInPage.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{postInPage.previous_page_number}}">Previous</a></li>
+            {% endif %}
+
+            {% if postInPage.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{postInPage.next_page_number}}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+{% endblock %}
+ 
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'network/js/javaScript.js' %}"></script>
+{% endblock %}
